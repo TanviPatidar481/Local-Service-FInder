@@ -1,15 +1,9 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-// Landing
 import OnboardingChoice from "./pages/onboarding/OnboardingChoice";
-
-// User flow
 import UserSignup from "./pages/onboarding/UserSignup";
 import UserVerifyEmail from "./pages/onboarding/UserVerifyEmail";
 import UserProfileSetup from "./pages/onboarding/UserProfileSetup";
-
-// Business flow
 import BusinessSignup from "./pages/onboarding/BusinessSignup";
 import BusinessVerifyEmail from "./pages/onboarding/BusinessVerifyEmail";
 import BusinessCategory from "./pages/onboarding/BusinessCategory";
