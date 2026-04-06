@@ -1,26 +1,26 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const UserVerifyEmail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || "your email";
+
   const [verificationCode, setVerificationCode] = useState("");
 
   const isValid = verificationCode.trim().length === 6;
 
   const handleSubmit = (e) => {
-  e.preventDefault();
-  if (!isValid) return;
+    e.preventDefault();
+    if (!isValid) return;
 
-  alert("User email verified successfully");
-
-  // ✅ FIXED
-  navigate("/onboarding/user-profile-setup");
-};
+    alert("User email verified successfully");
+    navigate("/onboarding/user-profile-setup");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-orange-50 px-4 py-8 md:px-8">
       <div className="mx-auto grid min-h-[90vh] w-full max-w-7xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] md:grid-cols-2">
-        
         <div className="flex flex-col justify-between bg-slate-900 px-8 py-10 text-white md:px-12 md:py-12">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium">
@@ -33,22 +33,15 @@ const UserVerifyEmail = () => {
             </h1>
 
             <p className="mt-5 max-w-lg text-base leading-8 text-slate-300">
-              We’ve sent a verification code to your email address. Enter the
-              code below to complete your signup and start exploring nearby
-              local services.
+              We’ve sent a verification code to your email address. Enter the code
+              below to continue.
             </p>
           </div>
 
           <div className="mt-10 space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-300">
-                Secure verification helps create trusted user accounts on the platform.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-300">
-                Once verified, users can search for tutors, classes, technicians, and more.
+              <p className="text-sm text-slate-300 break-all">
+                Verification email sent to: <span className="font-medium text-white">{email}</span>
               </p>
             </div>
           </div>
@@ -71,7 +64,7 @@ const UserVerifyEmail = () => {
             <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Verification Code
+                  Verification Code <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -95,13 +88,6 @@ const UserVerifyEmail = () => {
                 Verify Email
               </button>
             </form>
-
-            <button
-              type="button"
-              className="mt-5 text-sm font-medium text-indigo-600"
-            >
-              Resend code
-            </button>
           </div>
         </div>
       </div>

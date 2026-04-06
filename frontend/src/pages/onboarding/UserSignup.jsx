@@ -29,7 +29,6 @@ const UserSignup = () => {
     e.preventDefault();
     if (!isFormValid) return;
 
-    // ✅ Correct navigation
     navigate("/onboarding/user-verify-email", {
       state: {
         email: formData.email,
@@ -40,7 +39,6 @@ const UserSignup = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-orange-50 px-4 py-8 md:px-8">
       <div className="mx-auto grid min-h-[90vh] w-full max-w-7xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] md:grid-cols-2">
-        
         <div className="bg-slate-900 px-8 py-10 text-white md:px-12 md:py-12 flex flex-col justify-between">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium">
@@ -53,8 +51,8 @@ const UserSignup = () => {
             </h1>
 
             <p className="mt-5 max-w-lg text-base leading-8 text-slate-300">
-              Sign up to search nearby services, compare trusted providers, and
-              discover the most relevant results based on your needs and location.
+              Sign up to search nearby services and discover relevant local options
+              based on your needs and location.
             </p>
           </div>
 
@@ -67,7 +65,7 @@ const UserSignup = () => {
 
             <div className="rounded-2xl bg-white/5 p-4 border border-white/10">
               <p className="text-sm text-slate-300">
-                Your account helps you save preferences and access smarter local recommendations.
+                Your account helps save preferences and unlock smarter recommendations.
               </p>
             </div>
           </div>
@@ -90,7 +88,7 @@ const UserSignup = () => {
             <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Full Name
+                  Full Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -104,7 +102,7 @@ const UserSignup = () => {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Email Address
+                  Email Address <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
@@ -118,7 +116,7 @@ const UserSignup = () => {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Password
+                  Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -132,7 +130,7 @@ const UserSignup = () => {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Confirm Password
+                  Confirm Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -146,9 +144,7 @@ const UserSignup = () => {
 
               {formData.confirmPassword &&
                 formData.password !== formData.confirmPassword && (
-                  <p className="text-sm text-red-500">
-                    Passwords do not match.
-                  </p>
+                  <p className="text-sm text-red-500">Passwords do not match.</p>
                 )}
 
               <button
@@ -163,11 +159,6 @@ const UserSignup = () => {
                 Continue
               </button>
             </form>
-
-            <p className="mt-6 text-sm text-slate-500">
-              Already have an account?{" "}
-              <span className="font-medium text-indigo-600">Log in</span>
-            </p>
           </div>
         </div>
       </div>

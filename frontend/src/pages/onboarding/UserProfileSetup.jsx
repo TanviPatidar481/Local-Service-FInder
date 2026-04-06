@@ -7,18 +7,18 @@ const UserProfileSetup = () => {
   const [formData, setFormData] = useState({
     city: "",
     locality: "",
-    pincode: "",
     preferredServices: [],
+    pincode: "",
     language: "",
     budget: "",
   });
 
-  const serviceOptions = [
-    "Academic Tutors",
-    "Kids Activity Classes",
-    "Indoor Sports Coaching",
-    "Technicians",
-    "Event Organizers",
+  const servicesList = [
+    "Tutor",
+    "Kids Activity",
+    "Sports Coach",
+    "Technician",
+    "Event Organizer",
   ];
 
   const handleChange = (e) => {
@@ -28,143 +28,114 @@ const UserProfileSetup = () => {
     }));
   };
 
-  const handleServiceToggle = (service) => {
-    setFormData((prev) => {
-      const alreadySelected = prev.preferredServices.includes(service);
-
-      return {
-        ...prev,
-        preferredServices: alreadySelected
-          ? prev.preferredServices.filter((item) => item !== service)
-          : [...prev.preferredServices, service],
-      };
-    });
+  const toggleService = (service) => {
+    setFormData((prev) => ({
+      ...prev,
+      preferredServices: prev.preferredServices.includes(service)
+        ? prev.preferredServices.filter((s) => s !== service)
+        : [...prev.preferredServices, service],
+    }));
   };
 
   const isFormValid =
-  formData.city.trim() !== "" &&
-  formData.locality.trim() !== "" &&
-  formData.pincode.trim() !== "" &&
-  formData.language.trim() !== "" &&
-  formData.preferredServices.length > 0;
+    formData.city.trim() !== "" &&
+    formData.locality.trim() !== "" &&
+    formData.preferredServices.length > 0;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid) return;
 
-    localStorage.setItem("userProfileSetup", JSON.stringify(formData));
-    alert("User profile setup completed successfully");
-    navigate("/");
+    localStorage.setItem("userProfile", JSON.stringify(formData));
+    navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-orange-50 px-4 py-8 md:px-8">
-      <div className="mx-auto grid min-h-[90vh] w-full max-w-7xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] md:grid-cols-2">
-        <div className="flex flex-col justify-between bg-slate-900 px-8 py-10 text-white md:px-12 md:py-12">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50 to-orange-50 p-4">
+      <div className="mx-auto grid h-full w-full max-w-7xl overflow-hidden rounded-[28px] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.12)] md:grid-cols-2">
+        <div className="flex flex-col justify-between bg-slate-900 px-8 py-8 text-white">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-medium">
               <span className="h-2.5 w-2.5 rounded-full bg-indigo-400"></span>
               LocalBuddy AI
             </div>
 
-            <h1 className="mt-8 text-4xl font-bold leading-tight md:text-5xl">
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-indigo-300">
+              Step 3 of 3
+            </p>
+
+            <h1 className="mt-3 text-4xl font-bold leading-tight">
               Complete your profile
             </h1>
 
-            <p className="mt-5 max-w-lg text-base leading-8 text-slate-300">
-              Add a few details so we can show better nearby service
-              recommendations based on your location and preferences.
+            <p className="mt-4 max-w-md text-sm leading-7 text-slate-300">
+              Add a few quick details so we can personalize nearby service recommendations.
             </p>
           </div>
 
-          <div className="mt-10 space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-300">
-                Required fields must be filled before you can continue.
-              </p>
+          <div>
+            <div className="h-2 w-full rounded-full bg-white/10">
+              <div className="h-2 w-full rounded-full bg-indigo-400"></div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-300">
-                You can select multiple preferred services for better matching.
-              </p>
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+              Only city, locality, and preferred services are required.
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-center bg-white px-6 py-10 md:px-12">
-          <div className="w-full max-w-xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600">
+        <div className="flex h-full items-center justify-center px-8 py-6">
+          <div className="w-full max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">
               User Profile Setup
             </p>
 
-            <h2 className="mt-3 text-3xl font-bold text-slate-900 md:text-4xl">
+            <h2 className="mt-2 text-3xl font-bold text-slate-900">
               Tell us a little more
             </h2>
 
-            <p className="mt-4 text-base leading-7 text-slate-500">
-              This helps LocalBuddy AI personalize your service search
-              experience.
-            </p>
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    City <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name="city"
+                    placeholder="Enter city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  />
+                </div>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  City <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="Enter your city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Locality / Area <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="locality"
-                  placeholder="Enter your locality"
-                  value={formData.locality}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Pincode <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="pincode"
-                  placeholder="Enter pincode"
-                  value={formData.pincode}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                />
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Locality <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name="locality"
+                    placeholder="Enter locality"
+                    value={formData.locality}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
                   Preferred Services <span className="text-red-500">*</span>
                 </label>
-
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {serviceOptions.map((service) => {
+                <div className="grid grid-cols-2 gap-3">
+                  {servicesList.map((service) => {
                     const selected = formData.preferredServices.includes(service);
-
                     return (
                       <button
                         key={service}
                         type="button"
-                        onClick={() => handleServiceToggle(service)}
-                        className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
+                        onClick={() => toggleService(service)}
+                        className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition ${
                           selected
                             ? "border-indigo-500 bg-indigo-50 text-indigo-700"
                             : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300"
@@ -175,53 +146,53 @@ const UserProfileSetup = () => {
                     );
                   })}
                 </div>
-
-                {formData.preferredServices.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {formData.preferredServices.map((service) => (
-                      <span
-                        key={service}
-                        className="rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700"
-                      >
-                        {service}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Preferred Language <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="language"
-                  placeholder="Enter preferred language"
-                  value={formData.language}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                />
-              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Pincode <span className="text-slate-400 text-xs">(Optional)</span>
+                  </label>
+                  <input
+                    name="pincode"
+                    placeholder="Pincode"
+                    value={formData.pincode}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  />
+                </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Budget Range 
-                </label>
-                <input
-                  type="text"
-                  name="budget"
-                  placeholder="Enter your budget range"
-                  value={formData.budget}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                />
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Language <span className="text-slate-400 text-xs">(Optional)</span>
+                  </label>
+                  <input
+                    name="language"
+                    placeholder="Language"
+                    value={formData.language}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                    Budget <span className="text-slate-400 text-xs">(Optional)</span>
+                  </label>
+                  <input
+                    name="budget"
+                    placeholder="Budget"
+                    value={formData.budget}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  />
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={!isFormValid}
-                className={`w-full rounded-2xl py-3.5 text-white font-semibold transition ${
+                className={`w-full rounded-xl py-3.5 text-white font-semibold transition ${
                   isFormValid
                     ? "bg-indigo-600 hover:bg-indigo-700"
                     : "cursor-not-allowed bg-slate-300"

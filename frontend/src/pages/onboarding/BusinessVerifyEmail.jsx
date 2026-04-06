@@ -1,26 +1,34 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BusinessVerifyEmail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const email = location.state?.email || "your business email";
+
   const [verificationCode, setVerificationCode] = useState("");
 
+  // validation → only 6 digits allowed
   const isValid = verificationCode.trim().length === 6;
 
   const handleSubmit = (e) => {
-  e.preventDefault();
-  if (!isValid) return;
+    e.preventDefault();
 
-  alert("Business email verified successfully");
+    if (!isValid) return;
 
-  // ✅ FIXED
-  navigate("/onboarding/business-category");
-};
+    // simulate verification success
+    alert("Business email verified successfully");
+
+    // move to next onboarding step
+    navigate("/onboarding/business-category");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-orange-50 px-4 py-8 md:px-8">
       <div className="mx-auto grid min-h-[90vh] w-full max-w-7xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] md:grid-cols-2">
         
+        {/* LEFT SIDE */}
         <div className="flex flex-col justify-between bg-slate-900 px-8 py-10 text-white md:px-12 md:py-12">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium">
@@ -29,31 +37,26 @@ const BusinessVerifyEmail = () => {
             </div>
 
             <h1 className="mt-8 text-4xl font-bold leading-tight md:text-5xl">
-              Verify your business email
+              Verify your business
             </h1>
 
             <p className="mt-5 max-w-lg text-base leading-8 text-slate-300">
               We’ve sent a verification code to your registered business email.
-              Enter the code below to continue setting up your business presence
-              on LocalBuddy AI.
+              Enter the code below to continue onboarding.
             </p>
           </div>
 
-          <div className="mt-10 space-y-4">
+          <div className="mt-10">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-300">
-                Verification helps maintain trust and ensures genuine providers join the platform.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-300">
-                Verified businesses can move forward to complete listing and profile details.
+              <p className="text-sm text-slate-300 break-all">
+                Verification email sent to:{" "}
+                <span className="font-medium text-white">{email}</span>
               </p>
             </div>
           </div>
         </div>
 
+        {/* RIGHT SIDE */}
         <div className="flex items-center justify-center bg-white px-6 py-10 md:px-12">
           <div className="w-full max-w-xl">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
@@ -65,14 +68,15 @@ const BusinessVerifyEmail = () => {
             </h2>
 
             <p className="mt-4 text-base leading-7 text-slate-500">
-              Type the 6-digit code sent to your business email to continue.
+              Type the 6-digit code sent to your business email.
             </p>
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Verification Code
+                  Verification Code <span className="text-red-500">*</span>
                 </label>
+
                 <input
                   type="text"
                   maxLength={6}
@@ -92,18 +96,12 @@ const BusinessVerifyEmail = () => {
                     : "cursor-not-allowed bg-slate-300"
                 }`}
               >
-                Verify Email
+                Verify Business Email
               </button>
             </form>
-
-            <button
-              type="button"
-              className="mt-5 text-sm font-medium text-orange-500"
-            >
-              Resend code
-            </button>
           </div>
         </div>
+
       </div>
     </div>
   );

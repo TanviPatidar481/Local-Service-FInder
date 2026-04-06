@@ -30,16 +30,15 @@ const BusinessSignup = () => {
     if (!isFormValid) return;
 
     navigate("/onboarding/business-verify-email", {
-    state: {
-    email: formData.email,
-  },
+      state: {
+        email: formData.email,
+      },
     });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-orange-50 px-4 py-8 md:px-8">
       <div className="mx-auto grid min-h-[90vh] w-full max-w-7xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] md:grid-cols-2">
-        
         <div className="bg-slate-900 px-8 py-10 text-white md:px-12 md:py-12 flex flex-col justify-between">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium">
@@ -89,7 +88,7 @@ const BusinessSignup = () => {
             <form onSubmit={handleSubmit} className="mt-8 space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Business Name
+                  Business Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -97,13 +96,13 @@ const BusinessSignup = () => {
                   placeholder="Enter your business name"
                   value={formData.businessName}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Business Email
+                  Business Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
@@ -111,13 +110,13 @@ const BusinessSignup = () => {
                   placeholder="Enter your business email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Password
+                  Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -125,13 +124,13 @@ const BusinessSignup = () => {
                   placeholder="Create password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Confirm Password
+                  Confirm Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -139,21 +138,19 @@ const BusinessSignup = () => {
                   placeholder="Re-enter password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                 />
               </div>
 
               {formData.confirmPassword &&
                 formData.password !== formData.confirmPassword && (
-                  <p className="text-sm text-red-500">
-                    Passwords do not match.
-                  </p>
+                  <p className="text-sm text-red-500">Passwords do not match.</p>
                 )}
 
               <button
                 type="submit"
                 disabled={!isFormValid}
-                className={`w-full rounded-2xl py-3.5 text-base font-semibold text-white transition ${
+                className={`w-full rounded-2xl py-3.5 text-white font-semibold transition ${
                   isFormValid
                     ? "bg-orange-500 hover:bg-orange-600"
                     : "cursor-not-allowed bg-slate-300"
@@ -162,11 +159,6 @@ const BusinessSignup = () => {
                 Continue
               </button>
             </form>
-
-            <p className="mt-6 text-sm text-slate-500">
-              Already registered?{" "}
-              <span className="font-medium text-orange-500">Log in</span>
-            </p>
           </div>
         </div>
       </div>
