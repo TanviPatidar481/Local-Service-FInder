@@ -1,110 +1,121 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 const BusinessVerifyEmail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const email = location.state?.email || "your business email";
-
   const [verificationCode, setVerificationCode] = useState("");
-
-  // validation → only 6 digits allowed
   const isValid = verificationCode.trim().length === 6;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!isValid) return;
-
-    // simulate verification success
-    alert("Business email verified successfully");
-
-    // move to next onboarding step
-    navigate("/onboarding/business-category");
+    try {
+      const userId = localStorage.getItem("userId");
+      const finalData = {
+        user_id: userId,
+        ...JSON.parse(localStorage.getItem("businessSignup") || "{}"),
+        ...JSON.parse(localStorage.getItem("businessBasicInfo") || "{}"),
+        ...JSON.parse(localStorage.getItem("businessLocation") || "{}"),
+        ...JSON.parse(localStorage.getItem("businessCategory") || "{}"),
+      };
+      await api.post("/business/create", finalData);
+      alert("Business created");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-orange-50 px-4 py-8 md:px-8">
-      <div className="mx-auto grid min-h-[90vh] w-full max-w-7xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] md:grid-cols-2">
-        
-        {/* LEFT SIDE */}
-        <div className="flex flex-col justify-between bg-slate-900 px-8 py-10 text-white md:px-12 md:py-12">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium">
-              <span className="h-2.5 w-2.5 rounded-full bg-orange-400"></span>
-              LocalBuddy AI
-            </div>
-
-            <h1 className="mt-8 text-4xl font-bold leading-tight md:text-5xl">
-              Verify your business
-            </h1>
-
-            <p className="mt-5 max-w-lg text-base leading-8 text-slate-300">
-              We’ve sent a verification code to your registered business email.
-              Enter the code below to continue onboarding.
-            </p>
+    <div style={s.page}>
+      <div style={s.card}>
+        {/* LEFT */}
+        <div style={s.left}>
+          <div style={s.circleDecor} />
+          <div style={s.logo}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#2e7d32"/>
+              <circle cx="12" cy="9" r="2.5" fill="white"/>
+            </svg>
+            <span style={s.logoText}>LocalBuddy AI</span>
           </div>
-
-          <div className="mt-10">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-300 break-all">
-                Verification email sent to:{" "}
-                <span className="font-medium text-white">{email}</span>
-              </p>
+          <h1 style={s.heading}>Verify your<br/><span style={s.headingGreen}>business</span></h1>
+          <p style={s.subtext}>We've sent a verification code to your registered business email. Enter the code below to continue.</p>
+          <div style={s.pill}>
+            <div style={s.pillIcon}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="4" width="20" height="16" rx="2" stroke="#2e7d32" strokeWidth="1.8"/>
+                <path d="M2 7l10 7 10-7" stroke="#2e7d32" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
             </div>
+            <p style={s.pillText}>Verification email sent to: <strong>{email}</strong></p>
+          </div>
+          <div style={s.pill}>
+            <div style={s.pillIcon}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#2e7d32" strokeWidth="1.8" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <p style={s.pillText}>This helps us keep your business account secure.</p>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="flex items-center justify-center bg-white px-6 py-10 md:px-12">
-          <div className="w-full max-w-xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
-              Business Verification
-            </p>
-
-            <h2 className="mt-3 text-3xl font-bold text-slate-900 md:text-4xl">
-              Enter verification code
-            </h2>
-
-            <p className="mt-4 text-base leading-7 text-slate-500">
-              Type the 6-digit code sent to your business email.
-            </p>
-
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Verification Code <span className="text-red-500">*</span>
-                </label>
-
-                <input
-                  type="text"
-                  maxLength={6}
-                  value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
-                  placeholder="Enter 6-digit code"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
-                />
+        {/* RIGHT */}
+        <div style={s.right}>
+          <div style={s.circleDecorRight} />
+          <p style={s.tag}>BUSINESS VERIFICATION</p>
+          <h2 style={s.formTitle}>Enter verification <span style={s.formTitleGreen}>code</span></h2>
+          <p style={s.formSub}>Type the 6-digit code sent to your business email.</p>
+          <form onSubmit={handleSubmit} style={s.form}>
+            <div style={s.field}>
+              <label style={s.label}>Verification Code <span style={s.req}>*</span></label>
+              <div style={s.inputWrap}>
+                <svg style={s.ico} width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#2e7d32" strokeWidth="1.8" strokeLinejoin="round"/>
+                </svg>
+                <input style={{ ...s.input, letterSpacing:"0.1em" }} type="text" maxLength={6} value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} placeholder="Enter 6-digit code"/>
               </div>
-
-              <button
-                type="submit"
-                disabled={!isValid}
-                className={`w-full rounded-2xl py-3.5 text-base font-semibold text-white transition ${
-                  isValid
-                    ? "bg-orange-500 hover:bg-orange-600"
-                    : "cursor-not-allowed bg-slate-300"
-                }`}
-              >
-                Verify Business Email
-              </button>
-            </form>
-          </div>
+            </div>
+            <button type="submit" disabled={!isValid} style={{ ...s.btn, ...(isValid ? {} : s.btnDisabled) }}>
+              Verify Business Email
+            </button>
+          </form>
         </div>
-
       </div>
     </div>
   );
+};
+
+const s = {
+  page: { minHeight:"100vh", width:"100vw", backgroundImage:"url('/bg.jpg')", backgroundSize:"cover", backgroundPosition:"center", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Segoe UI','Inter',Arial,sans-serif", padding:"32px 16px" },
+  card: { display:"grid", gridTemplateColumns:"1fr 1.4fr", width:"100%", maxWidth:"960px", background:"rgba(255,255,255,0.92)", borderRadius:"24px", boxShadow:"0 8px 40px rgba(0,0,0,0.10)", overflow:"hidden", minHeight:"520px" },
+  left: { padding:"48px 40px", display:"flex", flexDirection:"column", gap:"16px", position:"relative", borderRight:"1px solid #e8f5e9" },
+  circleDecor: { position:"absolute", top:"-40px", right:"-40px", width:"130px", height:"130px", borderRadius:"50%", background:"rgba(165,214,167,0.18)", pointerEvents:"none" },
+  logo: { display:"flex", alignItems:"center", gap:"7px" },
+  logoText: { fontSize:"14px", fontWeight:"700", color:"#2e7d32" },
+  heading: { fontSize:"34px", fontWeight:"800", color:"#111", lineHeight:1.2, margin:0 },
+  headingGreen: { color:"#2e7d32" },
+  subtext: { fontSize:"14px", color:"#666", lineHeight:"1.65", margin:0 },
+  pill: { display:"flex", alignItems:"flex-start", gap:"12px", background:"#f1f8f1", borderRadius:"12px", padding:"14px 16px" },
+  pillIcon: { width:"32px", height:"32px", borderRadius:"8px", background:"#e8f5e9", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 },
+  pillText: { fontSize:"13px", color:"#555", lineHeight:"1.55", margin:0 },
+  right: { padding:"48px 40px", display:"flex", flexDirection:"column", justifyContent:"center", position:"relative" },
+  circleDecorRight: { position:"absolute", top:"-40px", right:"-40px", width:"130px", height:"130px", borderRadius:"50%", background:"rgba(165,214,167,0.15)", pointerEvents:"none" },
+  tag: { fontSize:"11px", fontWeight:"700", letterSpacing:"0.15em", color:"#2e7d32", margin:"0 0 8px" },
+  formTitle: { fontSize:"28px", fontWeight:"800", color:"#111", margin:"0 0 6px" },
+  formTitleGreen: { color:"#2e7d32" },
+  formSub: { fontSize:"13.5px", color:"#777", margin:"0 0 24px" },
+  form: { display:"flex", flexDirection:"column", gap:"16px" },
+  field: { display:"flex", flexDirection:"column", gap:"5px" },
+  label: { fontSize:"13px", fontWeight:"600", color:"#333" },
+  req: { color:"#e53935" },
+  inputWrap: { display:"flex", alignItems:"center", border:"1px solid #ddd", borderRadius:"10px", padding:"0 14px", gap:"10px", background:"#fff" },
+  ico: { flexShrink:0 },
+  input: { flex:1, border:"none", outline:"none", padding:"12px 0", fontSize:"14px", color:"#333", background:"transparent" },
+  btn: { width:"100%", padding:"14px", background:"#2e7d32", color:"white", border:"none", borderRadius:"10px", fontSize:"15px", fontWeight:"600", cursor:"pointer" },
+  btnDisabled: { background:"#a5d6a7", cursor:"not-allowed" },
 };
 
 export default BusinessVerifyEmail;

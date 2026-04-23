@@ -5,10 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 MONGO_URL = os.getenv("MONGO_URL")
-
 client = MongoClient(MONGO_URL)
 
 db = client["lrf_db"]
-
-# ✅ THIS IS IMPORTANT (THIS WAS MISSING / WRONG)
 users_collection = db["users"]
+businesses_collection = db["businesses"]
