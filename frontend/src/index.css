@@ -16,9 +16,14 @@ body,
 }
 
 body {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   background-color: #f1f5f9;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Provider dashboard uses Inter for data-dense areas */
+.provider-dash {
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
 }

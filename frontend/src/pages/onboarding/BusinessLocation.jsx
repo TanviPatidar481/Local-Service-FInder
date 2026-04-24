@@ -18,7 +18,7 @@ const BusinessLocation = () => {
     e.preventDefault();
     if (!isFormValid) return;
     localStorage.setItem("businessLocation", JSON.stringify(formData));
-    navigate("/onboarding/business-verify-email");
+    navigate("/provider/overview");
   };
 
   return (
