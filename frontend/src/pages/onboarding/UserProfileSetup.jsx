@@ -44,16 +44,32 @@ const UserProfileSetup = () => {
     e.preventDefault();
     if (!isFormValid) return;
     try {
-      const userId = localStorage.getItem("userId");
+      const userId   = localStorage.getItem("userId");
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+
       const payload = {
-        city: formData.city,
-        locality: formData.locality,
+        city:        formData.city,
+        locality:    formData.locality,
         preferences: formData.preferredServices,
-        pincode: formData.pincode || null,
-        language: formData.language || null,
-        budget: formData.budget || null,
+        pincode:     formData.pincode  || null,
+        language:    formData.language || null,
+        budget:      formData.budget   || null,
       };
       await api.put(`/auth/onboarding/${userId}`, payload);
+
+      // ── Persist merged profile to localStorage so profile page auto-prefills ──
+      localStorage.setItem("userProfile", JSON.stringify({
+        name:               userData.fullName  || "",
+        fullName:           userData.fullName  || "",
+        email:              userData.email     || "",
+        city:               formData.city,
+        locality:           formData.locality,
+        pincode:            formData.pincode   || "",
+        preferredServices:  formData.preferredServices,
+        language:           formData.language  || "",
+        budget:             formData.budget    || "",
+      }));
+
       navigate("/dashboard");
     } catch (err) {
       console.error("❌ Error:", err);

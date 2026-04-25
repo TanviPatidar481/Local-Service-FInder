@@ -12,13 +12,7 @@ import BusinessBasicInfo from "./pages/onboarding/BusinessBasicInfo";
 import BusinessLocation from "./pages/onboarding/BusinessLocation";
 import Login from "./pages/onboarding/Login";
 
-// User dashboard
-import Dashboard from "./pages/dashboard/UserDashboard";
-
-// Public provider profile — no sidebar, accessible by anyone
-import ProviderPublicProfile from "./pages/ProfilePage";
-
-// Provider dashboard — operations only (profile/services live on public profile)
+// Provider dashboard
 import DashboardShell from "./components/layout/DashboardShell";
 import Overview      from "./pages/dashboard/Overview";
 import Bookings      from "./pages/dashboard/Bookings";
@@ -26,6 +20,18 @@ import Availability  from "./pages/dashboard/Availability";
 import Messages      from "./pages/dashboard/Messages";
 import Reviews       from "./pages/dashboard/Reviews";
 import Settings      from "./pages/dashboard/Settings";
+
+// User dashboard
+import UserDashboardShell from "./components/layout/UserDashboardShell";
+import UserDashboard  from "./pages/dashboard/UserDashboard";
+import Explore        from "./pages/dashboard/Explore";
+import UserBookings   from "./pages/dashboard/UserBookings";
+import UserMessages   from "./pages/dashboard/UserMessages";
+import UserProfile    from "./pages/dashboard/UserProfile";
+
+// Public provider marketplace pages
+import ProvidersList          from "./pages/providers/ProvidersList";
+import ProviderPublicProfile  from "./pages/providers/ProviderPublicProfile";
 
 const App = () => {
   return (
@@ -44,9 +50,24 @@ const App = () => {
         <Route path="/onboarding/business-location"     element={<BusinessLocation />} />
 
         {/* User Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/user" element={<UserDashboardShell />}>
+          <Route index element={<Navigate to="home" replace />} />
+          <Route path="home"     element={<UserDashboard />} />
+          <Route path="explore"  element={<Explore />} />
+          <Route path="bookings" element={<UserBookings />} />
+          <Route path="messages" element={<UserMessages />} />
+          <Route path="profile"  element={<UserProfile />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
 
-        {/* Public provider profile — single route, role-based view/edit */}
+        {/* Legacy /dashboard redirect */}
+        <Route path="/dashboard" element={<Navigate to="/user/home" replace />} />
+
+        {/* Public provider marketplace — listing + read-only profile */}
+        <Route path="/providers"     element={<ProvidersList />} />
+        <Route path="/providers/:id" element={<ProviderPublicProfile />} />
+
+        {/* Legacy provider profile routes */}
         <Route path="/provider/:id/view" element={<ProviderPublicProfile />} />
         <Route path="/provider/:id"      element={<ProviderPublicProfile />} />
 
