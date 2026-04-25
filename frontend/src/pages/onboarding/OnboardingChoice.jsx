@@ -37,13 +37,6 @@ const OnboardingChoice = () => {
         {/* Find Services */}
         <div style={styles.cardLeft}>
           <div style={styles.greenBlob}/>
-          {/* leaf sprig inside card */}
-          <svg style={styles.leafSprig} viewBox="0 0 40 90" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20,85 C20,60 20,40 20,10" stroke="#81c784" strokeWidth="1.5" fill="none"/>
-            <ellipse cx="12" cy="55" rx="12" ry="6" fill="#a5d6a7" fillOpacity="0.8" transform="rotate(-30 12 55)"/>
-            <ellipse cx="28" cy="42" rx="11" ry="5" fill="#81c784" fillOpacity="0.8" transform="rotate(25 28 42)"/>
-            <ellipse cx="13" cy="30" rx="10" ry="5" fill="#a5d6a7" fillOpacity="0.7" transform="rotate(-20 13 30)"/>
-          </svg>
 
           <div style={styles.iconWrapGreen}>
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
@@ -62,6 +55,10 @@ const OnboardingChoice = () => {
             onMouseLeave={e => e.currentTarget.style.opacity="1"}>
             Sign Up as User &nbsp;→
           </button>
+          <p style={styles.loginText}>
+            Already have an account?{" "}
+            <span style={styles.loginLinkGreen} onClick={() => navigate("/login")}>Login</span>
+          </p>
         </div>
 
         {/* List Business */}
@@ -88,6 +85,10 @@ const OnboardingChoice = () => {
             onMouseLeave={e => e.currentTarget.style.opacity="1"}>
             Register Business &nbsp;→
           </button>
+          <p style={styles.loginText}>
+            Already have an account?{" "}
+            <span style={styles.loginLinkOrange} onClick={() => navigate("/login")}>Login</span>
+          </p>
         </div>
       </div>
 
@@ -352,6 +353,22 @@ const styles = {
   },
   pipe: {
     color: "#bbb",
+  },
+  loginText: {
+    marginTop: "12px",
+    fontSize: "13px",
+    color: "#666",
+    zIndex: 1,
+  },
+  loginLinkGreen: {
+    color: "#2e7d32",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+  loginLinkOrange: {
+    color: "#f57c00",
+    fontWeight: "600",
+    cursor: "pointer",
   },
 };
 

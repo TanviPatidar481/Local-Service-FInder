@@ -10,21 +10,22 @@ import BusinessVerifyEmail from "./pages/onboarding/BusinessVerifyEmail";
 import BusinessCategory from "./pages/onboarding/BusinessCategory";
 import BusinessBasicInfo from "./pages/onboarding/BusinessBasicInfo";
 import BusinessLocation from "./pages/onboarding/BusinessLocation";
+import Login from "./pages/onboarding/Login";
 
 // User dashboard
-import Dashboard from "./pages/dashboard/Dashboard";
+import Dashboard from "./pages/dashboard/UserDashboard";
 
 // Public provider profile — no sidebar, accessible by anyone
-import ProviderPublicProfile from "./pages/provider-public/ProviderPublicProfile";
+import ProviderPublicProfile from "./pages/ProfilePage";
 
 // Provider dashboard — operations only (profile/services live on public profile)
-import DashboardShell from "./pages/provider-dashboard/layout/DashboardShell";
-import Overview      from "./pages/provider-dashboard/pages/Overview";
-import Bookings      from "./pages/provider-dashboard/pages/Bookings";
-import Availability  from "./pages/provider-dashboard/pages/Availability";
-import Messages      from "./pages/provider-dashboard/pages/Messages";
-import Reviews       from "./pages/provider-dashboard/pages/Reviews";
-import Settings      from "./pages/provider-dashboard/pages/Settings";
+import DashboardShell from "./components/layout/DashboardShell";
+import Overview      from "./pages/dashboard/Overview";
+import Bookings      from "./pages/dashboard/Bookings";
+import Availability  from "./pages/dashboard/Availability";
+import Messages      from "./pages/dashboard/Messages";
+import Reviews       from "./pages/dashboard/Reviews";
+import Settings      from "./pages/dashboard/Settings";
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
       <Routes>
         {/* Onboarding */}
         <Route path="/" element={<OnboardingChoice />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/onboarding/user-signup"           element={<UserSignup />} />
         <Route path="/onboarding/user-verify-email"     element={<UserVerifyEmail />} />
         <Route path="/onboarding/user-profile-setup"    element={<UserProfileSetup />} />

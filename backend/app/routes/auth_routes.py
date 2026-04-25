@@ -3,12 +3,13 @@ from app.database import users_collection
 from app.schemas.user_schema import UserSignup, UserLogin, UserOnboarding
 from app.core.security import get_password_hash, verify_password, create_access_token
 from bson import ObjectId
+from bson.errors import InvalidId
 
 router = APIRouter(prefix="/auth")
 
+
 @router.post("/signup")
 def signup(user: UserSignup):
-
     if users_collection.find_one({"email": user.email}):
         raise HTTPException(status_code=400, detail="User already exists")
 
@@ -19,28 +20,26 @@ def signup(user: UserSignup):
         "email": user.email,
         "password": hashed_password,
         "role": user.role,
-        "is_verified": False
+        "is_verified": False,
     })
 
     user_id = str(result.inserted_id)
 
-    # 🔥 generate token immediately
     token = create_access_token({
         "user_id": user_id,
         "email": user.email,
-        "role": user.role
+        "role": user.role,
     })
 
     return {
         "message": "Signup successful",
         "user_id": user_id,
-        "access_token": token
+        "access_token": token,
     }
 
 
 @router.post("/login")
 def login(user: UserLogin):
-
     db_user = users_collection.find_one({"email": user.email})
 
     if not db_user:
@@ -52,18 +51,19 @@ def login(user: UserLogin):
     token = create_access_token({
         "user_id": str(db_user["_id"]),
         "email": db_user["email"],
-        "role": db_user["role"]
+        "role": db_user["role"],
     })
 
     return {
         "access_token": token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "user_id": str(db_user["_id"]),
+        "role": db_user["role"],
     }
 
 
 @router.put("/onboarding/{user_id}")
 def update_user_onboarding(user_id: str, data: UserOnboarding):
-
     try:
         obj_id = ObjectId(user_id)
     except InvalidId:

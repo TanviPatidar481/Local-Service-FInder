@@ -39,6 +39,10 @@ export default function Home() {
           <button className="btn btn-green" onClick={() => navigate("/signup")}>
             Sign Up as User &rarr;
           </button>
+          <p className="card-login">
+            Already have an account?{" "}
+            <span className="login-link green-link" onClick={() => navigate("/login")}>Login</span>
+          </p>
         </div>
 
         {/* List Business Card */}
@@ -52,6 +56,10 @@ export default function Home() {
           <button className="btn btn-orange" onClick={() => navigate("/list-business")}>
             Register Business &rarr;
           </button>
+          <p className="card-login">
+            Already have an account?{" "}
+            <span className="login-link orange-link" onClick={() => navigate("/login")}>Login</span>
+          </p>
         </div>
       </div>
 

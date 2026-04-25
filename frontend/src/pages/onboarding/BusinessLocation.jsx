@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/axiosInstance";
 
 const BusinessLocation = () => {
   const navigate = useNavigate();
@@ -7,6 +8,8 @@ const BusinessLocation = () => {
   const [formData, setFormData] = useState({
     city: "", locality: "", address: "", pincode: "", landmark: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -14,11 +17,43 @@ const BusinessLocation = () => {
 
   const isFormValid = formData.city.trim() !== "" && formData.locality.trim() !== "";
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
+    setError("");
+    setLoading(true);
+
     localStorage.setItem("businessLocation", JSON.stringify(formData));
-    navigate("/provider/overview");
+
+    try {
+      const userId = localStorage.getItem("userId");
+      const signup   = JSON.parse(localStorage.getItem("businessSignup")   || "{}");
+      const category = JSON.parse(localStorage.getItem("businessCategory") || "{}");
+      const basic    = JSON.parse(localStorage.getItem("businessBasicInfo")|| "{}");
+
+      await api.post("/business/create", {
+        user_id:      userId,
+        businessName: signup.businessName  || basic.businessName,
+        email:        signup.email,
+        category:     category.category,
+        contactPerson: basic.contactPerson,
+        phoneNumber:   basic.phoneNumber,
+        alternatePhone: basic.alternatePhone,
+        serviceMode:   basic.serviceMode,
+        description:   basic.description,
+        city:          formData.city,
+        locality:      formData.locality,
+        address:       formData.address,
+        pincode:       formData.pincode,
+        landmark:      formData.landmark,
+      });
+
+      navigate("/provider/overview");
+    } catch (err) {
+      setError(err.response?.data?.detail || "Failed to save business. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -91,9 +126,10 @@ const BusinessLocation = () => {
                 </div>
               </div>
             </div>
-            <button type="submit" disabled={!isFormValid} style={{ ...s.btn, ...(isFormValid ? {} : s.btnDisabled) }}>
-              Finish & Go to Dashboard
+            <button type="submit" disabled={!isFormValid || loading} style={{ ...s.btn, ...(!isFormValid || loading ? s.btnDisabled : {}) }}>
+              {loading ? "Saving..." : "Finish & Go to Dashboard"}
             </button>
+            {error && <p style={{ fontSize:"13px", color:"#e53935", marginTop:"8px", textAlign:"center" }}>{error}</p>}
           </form>
         </div>
       </div>

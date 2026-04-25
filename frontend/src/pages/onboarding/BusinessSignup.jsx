@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/axiosInstance";
 
 const BusinessSignup = () => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const BusinessSignup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -22,11 +25,28 @@ const BusinessSignup = () => {
     formData.confirmPassword.trim() !== "" &&
     formData.password === formData.confirmPassword;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
-    localStorage.setItem("businessSignup", JSON.stringify(formData));
-    navigate("/onboarding/business-category");
+    setError("");
+    setLoading(true);
+    try {
+      const res = await api.post("/auth/signup", {
+        full_name: formData.businessName,
+        email: formData.email,
+        password: formData.password,
+        role: "provider",
+      });
+      localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("userId", res.data.user_id);
+      localStorage.setItem("role", "provider");
+      localStorage.setItem("businessSignup", JSON.stringify(formData));
+      navigate("/onboarding/business-category");
+    } catch (err) {
+      setError(err.response?.data?.detail || "Signup failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,8 +129,9 @@ const BusinessSignup = () => {
             {formData.confirmPassword && formData.password !== formData.confirmPassword && (
               <p style={s.error}>Passwords do not match.</p>
             )}
-            <button type="submit" disabled={!isFormValid} style={{ ...s.btn, ...(isFormValid ? {} : s.btnDisabled) }}>
-              Continue
+            {error && <p style={s.error}>{error}</p>}
+            <button type="submit" disabled={!isFormValid || loading} style={{ ...s.btn, ...(isFormValid && !loading ? {} : s.btnDisabled) }}>
+              {loading ? "Creating account..." : "Continue"}
             </button>
           </form>
         </div>
