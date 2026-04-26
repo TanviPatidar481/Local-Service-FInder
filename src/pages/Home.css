@@ -1,0 +1,225 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* WRAPPER */
+.home-wrapper {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(160deg, #f0faf0 0%, #e8f5e9 40%, #f9fbe7 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle city silhouette overlay */
+.home-wrapper::before {
+  content: '';
+  position: absolute;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  height: 220px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 220'%3E%3Cpath fill='%23c8e6c9' fill-opacity='0.4' d='M0,160 L60,160 L60,100 L100,100 L100,60 L140,60 L140,100 L180,100 L180,80 L220,80 L220,100 L260,100 L260,140 L300,140 L300,100 L340,100 L340,120 L380,120 L380,100 L420,100 L420,160 L480,160 L480,110 L520,110 L520,70 L560,70 L560,110 L600,110 L600,130 L640,130 L640,100 L680,100 L680,160 L740,160 L740,120 L780,120 L780,90 L820,90 L820,120 L860,120 L860,160 L920,160 L920,100 L960,100 L960,130 L1000,130 L1000,100 L1040,100 L1040,160 L1100,160 L1100,110 L1140,110 L1140,80 L1180,80 L1180,110 L1220,110 L1220,140 L1260,140 L1260,110 L1300,110 L1300,160 L1440,160 L1440,220 L0,220 Z'/%3E%3C/svg%3E") no-repeat bottom center;
+  background-size: cover;
+  pointer-events: none;
+}
+
+/* NAVBAR */
+.home-nav {
+  width: 100%;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+}
+
+.home-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.logo-icon {
+  font-size: 22px;
+}
+
+.logo-text {
+  color: #1b5e20;
+}
+
+/* HERO */
+.home-hero {
+  text-align: center;
+  margin-top: 30px;
+  padding: 0 20px;
+}
+
+.hero-title {
+  font-size: 52px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1px;
+}
+
+.hero-ai {
+  color: #2e7d32;
+}
+
+.hero-subtitle {
+  margin-top: 14px;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.7;
+}
+
+/* CARDS */
+.home-cards {
+  display: flex;
+  gap: 28px;
+  margin-top: 48px;
+  padding: 0 20px;
+  z-index: 1;
+}
+
+.card {
+  background: #ffffffcc;
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: 340px;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-left::after {
+  content: '🌿';
+  position: absolute;
+  bottom: 60px;
+  right: -10px;
+  font-size: 60px;
+  opacity: 0.25;
+  transform: rotate(-10deg);
+}
+
+.card-right {
+  background: #fff8f0cc;
+}
+
+/* ICONS */
+.card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.green-icon {
+  background: #e8f5e9;
+}
+
+.orange-icon {
+  background: #fff3e0;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.card-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* BUTTONS */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-green {
+  background: #2e7d32;
+  color: white;
+}
+
+.btn-orange {
+  background: #f57c00;
+  color: white;
+}
+
+/* FOOTER TAGLINE */
+.home-footer {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: #555;
+  z-index: 1;
+}
+
+.divider {
+  color: #bbb;
+}
+
+/* LOGIN LINK */
+.card-login {
+  font-size: 13px;
+  color: #666;
+  margin-top: -4px;
+}
+
+.login-link {
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.green-link {
+  color: #2e7d32;
+}
+
+.orange-link {
+  color: #f57c00;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
