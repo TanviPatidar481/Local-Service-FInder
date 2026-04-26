@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { MapPin, Search, Bell, ChevronDown } from "lucide-react";
 import { useUserProfile } from "../../features/profile/useUserProfile";
 
-const UserTopbar = ({ onSearch, searchValue, onSearchChange }) => {
+const UserTopbar = () => {
   const { name, city } = useUserProfile();
   const displayName = name || "User";
   const displayCity = city || "Your City";
+  const [search, setSearch] = useState("");
 
   return (
     <header className="h-[60px] bg-white border-b border-slate-100 flex items-center justify-between px-6 sticky top-0 z-20 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
@@ -21,8 +22,8 @@ const UserTopbar = ({ onSearch, searchValue, onSearchChange }) => {
           <Search size={14} className="text-slate-400 flex-shrink-0" strokeWidth={2} />
           <input
             type="text"
-            value={searchValue}
-            onChange={onSearchChange}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search services, providers..."
             className="flex-1 bg-transparent text-sm outline-none text-slate-600 placeholder-slate-400 font-medium"
           />

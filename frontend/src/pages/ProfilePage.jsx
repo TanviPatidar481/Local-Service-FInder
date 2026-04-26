@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 import {
-  ArrowLeft, MapPin, Globe, Tag, Star, Zap, BadgeCheck,
+  ArrowLeft, MapPin, Globe, Tag, Star, BadgeCheck,
   MessageSquare, CalendarDays, Bell, ChevronDown, Briefcase,
   ImagePlus, Shield, Users, Pencil, X, Save, Plus, MoreVertical,
   Trash2, IndianRupee, Heart, MessageCircle, Upload,
@@ -374,9 +374,9 @@ const timeAgo = (iso) => {
 };
 
 const PostCard = ({ post, isOwner, avatar, name, onDelete, onEdit }) => {
-  const [menu, setMenu]     = useState(false);
+  const [menu,    setMenu]    = useState(false);
   const [confirm, setConfirm] = useState(false);
-  const menuRef             = useRef(null);
+  const menuRef               = useRef(null);
 
   useEffect(() => {
     if (!menu) return;
@@ -387,52 +387,68 @@ const PostCard = ({ post, isOwner, avatar, name, onDelete, onEdit }) => {
 
   return (
     <>
-      <div style={{ padding:"16px 0", borderBottom:"1px solid #f1f5f9" }}>
-        <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:10 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <div style={{ width:36, height:36, borderRadius:"50%", background:"#dcfce7", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:700, color:"#16a34a", flexShrink:0 }}>
-              {avatar}
+      <div style={{
+        background:"#fff", borderRadius:14, border:"1px solid #e5e7eb",
+        overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,0.06)",
+        transition:"box-shadow 0.2s", display:"flex", flexDirection:"column",
+      }}
+        onMouseEnter={e => e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,0.10)"}
+        onMouseLeave={e => e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,0.06)"}
+      >
+        {/* Author row + caption — padded */}
+        <div style={{ padding:"12px 14px 10px" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <div style={{ width:32, height:32, borderRadius:"50%", background:"#dcfce7", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#16a34a", flexShrink:0 }}>
+                {avatar}
+              </div>
+              <div>
+                <p style={{ fontSize:12, fontWeight:700, color:"#111827", margin:0 }}>{name}</p>
+                <p style={{ fontSize:10, color:"#9ca3af", margin:0 }}>{post.created_at ? timeAgo(post.created_at) : "just now"}</p>
+              </div>
             </div>
-            <div>
-              <p style={{ fontSize:13, fontWeight:600, color:"#111827", margin:0, lineHeight:1.4 }}>{name}</p>
-              <p style={{ fontSize:11, color:"#9ca3af", margin:"2px 0 0" }}>{post.created_at ? timeAgo(post.created_at) : "just now"}</p>
-            </div>
+            {isOwner && (
+              <div ref={menuRef} style={{ position:"relative" }}>
+                <button onClick={() => setMenu(m => !m)}
+                  style={{ background:"none", border:"none", cursor:"pointer", color:"#9ca3af", padding:4, display:"flex" }}>
+                  <MoreVertical size={15} />
+                </button>
+                {menu && (
+                  <div style={{ position:"absolute", right:0, top:24, background:"#fff", border:"1px solid #e5e7eb", borderRadius:10, boxShadow:"0 4px 12px rgba(0,0,0,0.1)", zIndex:20, minWidth:130 }}>
+                    <button onClick={() => { onEdit(post); setMenu(false); }}
+                      style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"8px 12px", border:"none", background:"none", fontSize:12, color:"#374151", cursor:"pointer" }}>
+                      <Pencil size={12} /> Edit
+                    </button>
+                    <button onClick={() => { setConfirm(true); setMenu(false); }}
+                      style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"8px 12px", border:"none", background:"none", fontSize:12, color:"#ef4444", cursor:"pointer" }}>
+                      <Trash2 size={12} /> Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          {isOwner && (
-            <div ref={menuRef} style={{ position:"relative" }}>
-              <button onClick={() => setMenu(m => !m)}
-                style={{ background:"none", border:"none", cursor:"pointer", color:"#9ca3af", padding:4 }}>
-                <MoreVertical size={16} />
-              </button>
-              {menu && (
-                <div style={{ position:"absolute", right:0, top:26, background:"#fff", border:"1px solid #e5e7eb", borderRadius:10, boxShadow:"0 4px 12px rgba(0,0,0,0.1)", zIndex:20, minWidth:140 }}>
-                  <button onClick={() => { onEdit(post); setMenu(false); }}
-                    style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"9px 14px", border:"none", background:"none", fontSize:13, color:"#374151", cursor:"pointer" }}>
-                    <Pencil size={13} /> Edit Post
-                  </button>
-                  <button onClick={() => { setConfirm(true); setMenu(false); }}
-                    style={{ display:"flex", alignItems:"center", gap:8, width:"100%", padding:"9px 14px", border:"none", background:"none", fontSize:13, color:"#ef4444", cursor:"pointer" }}>
-                    <Trash2 size={13} /> Delete Post
-                  </button>
-                </div>
-              )}
-            </div>
+          {post.content && (
+            <p style={{ fontSize:12, color:"#374151", lineHeight:1.55, margin:0,
+              display:"-webkit-box", WebkitBoxOrient:"vertical", WebkitLineClamp:3, overflow:"hidden" }}>
+              {post.content}
+            </p>
           )}
         </div>
 
-        <p style={{ fontSize:13, color:"#374151", lineHeight:1.6, margin:"0 0 12px" }}>{post.content}</p>
+        {/* Image — full image, natural size, no cropping */}
         {post.image && (
-          <div style={{ width:"100%", aspectRatio:"16/9", overflow:"hidden", borderRadius:12, marginTop:4, marginBottom:12, background:"#f1f5f9" }}>
-            <img src={post.image} alt="post"
-              style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center", display:"block" }} />
-          </div>
+          <img src={post.image} alt="post"
+            style={{ width:"100%", display:"block" }} />
         )}
-        <div style={{ display:"flex", gap:16 }}>
-          <button style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, color:"#6b7280", background:"none", border:"none", cursor:"pointer" }}>
-            <Heart size={14} strokeWidth={1.8} /> Like
+
+        {/* Actions */}
+        <div style={{ padding:"8px 14px", display:"flex", gap:14, borderTop:"1px solid #f3f4f6" }}>
+          <button style={{ display:"flex", alignItems:"center", gap:4, fontSize:11, color:"#6b7280", background:"none", border:"none", cursor:"pointer", fontWeight:500 }}>
+            <Heart size={13} strokeWidth={1.8} /> Like
           </button>
-          <button style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, color:"#6b7280", background:"none", border:"none", cursor:"pointer" }}>
-            <MessageCircle size={14} strokeWidth={1.8} /> Comment
+          <button style={{ display:"flex", alignItems:"center", gap:4, fontSize:11, color:"#6b7280", background:"none", border:"none", cursor:"pointer", fontWeight:500 }}>
+            <MessageCircle size={13} strokeWidth={1.8} /> Comment
           </button>
         </div>
       </div>
@@ -479,9 +495,9 @@ export default function ProfilePage() {
   // Real auth from localStorage
   const loggedInUserId = localStorage.getItem("userId") || "";
   const loggedInRole   = localStorage.getItem("role") || "";
-  const loggedInName   = loggedInRole === "provider"
-    ? (localStorage.getItem("businessName") || "Provider")
-    : "User";
+  const businessBasic  = JSON.parse(localStorage.getItem("businessBasicInfo") || "{}");
+  const loggedInName   = businessBasic.businessName || businessBasic.contactPerson
+    || (loggedInRole === "provider" ? localStorage.getItem("businessName") || "Provider" : "User");
   const loggedInAvatar = loggedInName.charAt(0).toUpperCase();
 
   // Profile ID to load: URL param if present, else logged-in user's own profile
@@ -528,18 +544,18 @@ export default function ProfilePage() {
         const { profile: d, services: svcs, posts: ps, isOwner: owner } = res.data;
 
         const built = {
-          id:           d.id,          // business _id — used as providerId when booking
-          user_id:      d.user_id,     // auth user id — used for ownership checks
+id: d.id,
+user_id: d.user_id,
           name:         d.businessName || d.contactPerson || "",
           username:     `@${(d.businessName || "provider").toLowerCase().replace(/\s+/g, "")}`,
           avatar:       (d.businessName || d.contactPerson || "P").charAt(0).toUpperCase(),
           location:     `${d.city || ""}${d.locality ? ", " + d.locality : ""}`,
           serviceMode:  d.serviceMode || d.service_mode || "",
           category:     d.category || "",
-          memberSince:  d.memberSince || "",
+          memberSince:  d.memberSince || d.member_since || "",
           rating:       d.rating || 0,
-          reviewCount:  d.reviewCount || 0,
-          totalBookings: d.totalBookings || 0,
+          reviewCount:  d.reviewCount || d.review_count || 0,
+          totalBookings: d.totalBookings || d.total_bookings || 0,
           bio:          d.description || "",
           businessName: d.businessName || "",
           city:         d.city || "",
@@ -562,7 +578,41 @@ export default function ProfilePage() {
 
         setPosts(ps);
       })
-      .catch(err => console.error("[Profile] Load error:", err.response?.data || err.message))
+      .catch(() => {
+        // Fallback to localStorage onboarding data when API is unavailable
+        const basic = JSON.parse(localStorage.getItem("businessBasicInfo") || "{}");
+        const loc   = JSON.parse(localStorage.getItem("businessLocation")  || "{}");
+        const cat   = JSON.parse(localStorage.getItem("businessCategory")  || "{}");
+        const storedId = localStorage.getItem("userId") || "";
+        const name = basic.businessName || basic.contactPerson || "";
+        setProfileData({
+          id:           storedId,
+          name,
+          username:     name ? `@${name.toLowerCase().replace(/\s+/g, "")}` : "",
+          avatar:       (name || "P").charAt(0).toUpperCase(),
+          location:     `${loc.city || ""}${loc.locality ? ", " + loc.locality : ""}`,
+          serviceMode:  basic.serviceMode  || "",
+          category:     cat.category       || "",
+          memberSince:  "",
+          rating:       0,
+          reviewCount:  0,
+          totalBookings: 0,
+          bio:          basic.description  || "",
+          businessName: basic.businessName || "",
+          city:         loc.city           || "",
+          locality:     loc.locality       || "",
+          description:  basic.description  || "",
+        });
+        setFormData({
+          businessName: basic.businessName || "",
+          category:     cat.category       || "",
+          serviceMode:  basic.serviceMode  || "",
+          city:         loc.city           || "",
+          locality:     loc.locality       || "",
+          description:  basic.description  || "",
+        });
+        setIsOwnerState(storedId === profileUserId || profileUserId === "me");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -629,7 +679,8 @@ export default function ProfilePage() {
 
       {/* ── Header ── */}
       <header style={{ height:52, background:"#fff", borderBottom:"1px solid #e5e7eb", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 32px", position:"sticky", top:0, zIndex:40 }}>
-        <button onClick={() => navigate(-1)} style={{ display:"flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600, color:"#374151", background:"none", border:"none", cursor:"pointer" }}>
+        <button onClick={() => navigate(-1)} style={{ display:"flex", alignItems:"center", gap:6, fontSize:14, fontWeight:600,
+           color:"#374151", background:"none", border:"none", cursor:"pointer" }}>
           <ArrowLeft size={15} strokeWidth={2.5} /> Back
         </button>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
@@ -731,10 +782,11 @@ export default function ProfilePage() {
                         </div>
                         <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                           <Stars rating={profileData.rating} />
-                          <span style={{ fontSize:13, color:"#374151", fontWeight:500 }}>{profileData.rating} ({profileData.reviewCount} reviews)</span>
-                          <span style={{ fontSize:12, color:"#6b7280" }}>• New provider</span>
-                          <span style={{ display:"flex", alignItems:"center", gap:3, fontSize:12, color:"#6b7280" }}>
-                            <Zap size={11} fill="#6b7280" color="#6b7280" /> Fast response
+                          <span style={{ fontSize:13, color:"#374151", fontWeight:500 }}>
+                            {profileData.rating > 0 ? profileData.rating.toFixed(1) : "No rating"} ({profileData.reviewCount} review{profileData.reviewCount !== 1 ? "s" : ""})
+                          </span>
+                          <span style={{ fontSize:12, color:"#6b7280" }}>
+                            • {profileData.totalBookings > 0 ? `${profileData.totalBookings} booking${profileData.totalBookings !== 1 ? "s" : ""}` : "New provider"}
                           </span>
                         </div>
                       </>
@@ -760,17 +812,47 @@ export default function ProfilePage() {
                           <Save size={13} strokeWidth={2.5} /> {saving ? "Saving..." : "Save Changes"}
                         </button>
                       </>
-                    ) : (
-                      <>
-                        <button style={{ display:"flex", alignItems:"center", gap:6, padding:"9px 18px", border:"1.5px solid #d1d5db", borderRadius:8, background:"#fff", fontSize:13, fontWeight:600, color:"#374151", cursor:"pointer", whiteSpace:"nowrap" }}>
-                          <MessageSquare size={14} strokeWidth={2} /> Message
-                        </button>
-                        <button style={{ display:"flex", alignItems:"center", gap:6, padding:"9px 18px", border:"none", borderRadius:8, background:"#16a34a", fontSize:13, fontWeight:600, color:"#fff", cursor:"pointer", whiteSpace:"nowrap" }}
-                          onClick={() => setBookingService(services[0] || { id:"general", title:"General Booking" })}>
-                          <CalendarDays size={14} strokeWidth={2} /> Book Now
-                        </button>
-                      </>
-                    )}
+) : (
+  <>
+    <button
+      style={{
+        display:"flex", alignItems:"center", gap:6,
+        padding:"9px 18px",
+        border:"1.5px solid #d1d5db",
+        borderRadius:8,
+        background:"#fff",
+        fontSize:13,
+        fontWeight:600,
+        color:"#374151",
+        cursor:"pointer"
+      }}
+    >
+      <MessageSquare size={14} /> Message
+    </button>
+
+    <button
+      style={{
+        display:"flex", alignItems:"center", gap:6,
+        padding:"9px 18px",
+        border:"none",
+        borderRadius:8,
+        background:"#16a34a",
+        fontSize:13,
+        fontWeight:600,
+        color:"#fff",
+        cursor:"pointer"
+      }}
+      onClick={() =>
+        setBookingService(
+          services[0] || { id: "general", title: "General Booking" }
+        )
+      }
+    >
+      <CalendarDays size={14} /> Book Now
+    </button>
+  </>
+)
+}
                   </div>
                 </div>
               </div>
@@ -789,6 +871,7 @@ export default function ProfilePage() {
           </div>
 
           {/* ── Services Section ── */}
+          {(tab === "Overview" || tab === "Services") && (
           <div style={{ background:"#fff", borderRadius:16, border:"1px solid #e5e7eb", padding:"18px 24px", boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
               <span style={{ fontSize:14, fontWeight:700, color:"#111827" }}>Services Offered</span>
@@ -799,7 +882,6 @@ export default function ProfilePage() {
                     <Plus size={13} strokeWidth={2.5} /> Add Service
                   </button>
                 )}
-                <span style={{ fontSize:13, fontWeight:600, color:"#16a34a", cursor:"pointer" }}>View all</span>
               </div>
             </div>
             {services.length === 0 ? (
@@ -821,24 +903,22 @@ export default function ProfilePage() {
                     )}
                   </div>
                 ))}
-                <p style={{ fontSize:12, fontWeight:600, color:"#16a34a", textAlign:"center", marginTop:12, cursor:"pointer" }}>View all services</p>
               </div>
             )}
           </div>
+          )}
 
           {/* ── Posts Section ── */}
+          {(tab === "Overview" || tab === "Posts") && (
           <div style={{ background:"#fff", borderRadius:16, border:"1px solid #e5e7eb", padding:"18px 24px", boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
               <span style={{ fontSize:14, fontWeight:700, color:"#111827" }}>Posts & Updates</span>
-              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                {isOwner && (
-                  <button onClick={() => setShowCreatePost(true)}
-                    style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", background:"#16a34a", color:"#fff", border:"none", borderRadius:8, fontSize:12, fontWeight:700, cursor:"pointer" }}>
-                    <Plus size={13} strokeWidth={2.5} /> Create Post
-                  </button>
-                )}
-                <span style={{ fontSize:13, fontWeight:600, color:"#16a34a", cursor:"pointer" }}>View all</span>
-              </div>
+              {isOwner && (
+                <button onClick={() => setShowCreatePost(true)}
+                  style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", background:"#16a34a", color:"#fff", border:"none", borderRadius:8, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                  <Plus size={13} strokeWidth={2.5} /> Create Post
+                </button>
+              )}
             </div>
 
             {/* Success banner */}
@@ -854,7 +934,7 @@ export default function ProfilePage() {
                 msg="Share updates, offers, or announcements with your customers."
                 cta="Create Your First Post" onCta={() => setShowCreatePost(true)} isOwner={isOwner} />
             ) : (
-              <div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
                 {posts.map(post => (
                   <PostCard key={post.id} post={post} isOwner={isOwner}
                     avatar={profileData.avatar} name={profileData.name}
@@ -867,21 +947,41 @@ export default function ProfilePage() {
                     onEdit={(post) => setEditingPost(post)}
                   />
                 ))}
-                <p style={{ fontSize:12, fontWeight:600, color:"#16a34a", textAlign:"center", marginTop:12, cursor:"pointer" }}>View all posts</p>
               </div>
             )}
           </div>
-
-          {/* Booking modal */}
-          {bookingService && (
-            <BookNowModal
-              service={bookingService}
-              providerId={profileData.id}
-              onClose={() => setBookingService(null)}
-            />
           )}
 
-          {/* Post modals */}
+{/* Booking modal */}
+{bookingService && (
+  <BookNowModal
+    service={bookingService}
+    providerId={profileData.id}
+    onClose={() => setBookingService(null)}
+  />
+)}
+
+{/* About Section */}
+{tab === "About" && (
+  <div
+    style={{
+      background:"#fff",
+      borderRadius:16,
+      border:"1px solid #e5e7eb",
+      padding:"18px 24px",
+      boxShadow:"0 1px 3px rgba(0,0,0,0.04)"
+    }}
+  >
+    <p style={{ fontSize:14, fontWeight:700, color:"#111827", margin:"0 0 14px" }}>
+      About {profileData.name}
+    </p>
+
+    <p style={{ fontSize:13, color:"#4b5563", lineHeight:1.7 }}>
+      {profileData.description || profileData.bio || "No description added yet."}
+    </p>
+  </div>
+)}
+
           {showCreatePost && (
             <CreatePostModal
               onClose={() => setShowCreatePost(false)}
@@ -901,14 +1001,15 @@ export default function ProfilePage() {
           )}
 
           {/* ── Reviews Section ── */}
+          {(tab === "Overview" || tab === "Reviews") && (
           <div style={{ background:"#fff", borderRadius:16, border:"1px solid #e5e7eb", padding:"18px 24px", boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:2 }}>
               <span style={{ fontSize:14, fontWeight:700, color:"#111827" }}>Reviews</span>
-              <span style={{ fontSize:13, fontWeight:600, color:"#16a34a", cursor:"pointer" }}>View all</span>
             </div>
             <EmptyState icon={Star} title="No reviews yet"
               msg="Reviews will appear here after you complete bookings." isOwner={isOwner} />
           </div>
+          )}
 
           {/* Modals */}
           {showAddService && (
@@ -971,9 +1072,9 @@ export default function ProfilePage() {
           <div style={{ background:"#fff", borderRadius:16, border:"1px solid #e5e7eb", padding:"16px 18px", boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
             <p style={{ fontSize:13, fontWeight:700, color:"#111827", margin:"0 0 14px" }}>Highlights</p>
             {[
-              { bg:"#f0fdf4", icon:<Users size={16} color="#16a34a" strokeWidth={1.8} />, val:`${profileData.totalBookings}+`, label:"Happy Students" },
-              { bg:"#fffbeb", icon:<Star  size={16} color="#f59e0b" strokeWidth={1.8} />, val:`${profileData.rating}`,         label:"Customer Rating" },
-              { bg:"#f5f3ff", icon:<Zap   size={16} color="#7c3aed" strokeWidth={1.8} />, val:"Fast Response",       label:"Usually replies within minutes" },
+              { bg:"#f0fdf4", icon:<Users size={16} color="#16a34a" strokeWidth={1.8} />, val:`${profileData.totalBookings}`, label:"Completed Bookings" },
+              { bg:"#fffbeb", icon:<Star  size={16} color="#f59e0b" strokeWidth={1.8} />, val: profileData.rating > 0 ? profileData.rating.toFixed(1) : "—", label:"Average Rating" },
+              { bg:"#eff6ff", icon:<MessageSquare size={16} color="#3b82f6" strokeWidth={1.8} />, val:`${profileData.reviewCount}`, label:"Total Reviews" },
             ].map(({ bg, icon, val, label }) => (
               <div key={label} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
                 <div style={{ width:34, height:34, borderRadius:9, background:bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{icon}</div>

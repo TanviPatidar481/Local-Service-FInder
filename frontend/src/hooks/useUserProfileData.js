@@ -2,38 +2,33 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchUserProfile, patchUserField } from "../services/userService";
 
 /**
- * Reads all onboarding-written localStorage keys and maps them
- * to the profile field names used by the profile page.
+ * Reads ONLY user-specific localStorage keys.
+ * Never reads businessBasicInfo / businessLocation / businessCategory.
  *
- * Keys written by onboarding:
- *   "userProfile"  → { name, fullName, email, city, locality, pincode,
- *                       preferredServices, language, budget }
- *   "userData"     → { fullName, email, password, confirmPassword }  (signup step)
- *   "userId"       → string
+ * Keys:
+ *   "userProfile" → written by UserProfileSetup after onboarding
+ *   "userData"    → written by UserSignup (fullName, email only)
  */
 const getLocalFallback = () => {
-  const p = JSON.parse(localStorage.getItem("userProfile") || "{}");
-  const u = JSON.parse(localStorage.getItem("userData")    || "{}");
+  const p    = JSON.parse(localStorage.getItem("userProfile") || "{}");
+  const u    = JSON.parse(localStorage.getItem("userData")    || "{}");
+  const role = localStorage.getItem("role") || "";
+  const isProvider = role === "provider";
 
   return {
-    // Basic info — prefer userProfile, fall back to userData (signup step)
-    full_name:     p.name     || p.fullName || u.fullName || "",
-    username:      p.username || "",
-    email:         p.email    || u.email    || "",
-    phone:         p.phone    || "",
+    full_name:     p.name || p.fullName || (!isProvider ? u.fullName : "") || "",
+    username:      p.username    || "",
+    email:         p.email       || (!isProvider ? u.email : "") || "",
+    phone:         p.phone       || "",
     date_of_birth: p.dateOfBirth || "",
-    avatar:        p.avatar   || "",
-
-    // Location — written by UserProfileSetup
-    address:             p.address  || "",
-    city:                p.city     || "",
-    locality:            p.locality || "",
-    state:               p.state    || "",
-    pincode:             p.pincode  || "",
+    avatar:        p.avatar      || "",
+    address:       p.address     || "",
+    city:          p.city        || "",
+    locality:      p.locality    || "",
+    state:         p.state       || "",
+    pincode:       p.pincode     || "",
     service_area_radius: p.serviceAreaRadius || "",
-
-    // Account stats
-    member_since:    p.memberSince   || "",
+    member_since:    p.memberSince    || "",
     total_bookings:  p.totalBookings  || 0,
     saved_providers: p.savedProviders || 0,
   };
@@ -41,7 +36,6 @@ const getLocalFallback = () => {
 
 const syncLocalStorage = (key, value) => {
   const existing = JSON.parse(localStorage.getItem("userProfile") || "{}");
-  // Keep display-name keys in sync for topbar / sidebar reads
   const keyMap = {
     full_name: "name",
     email:     "email",
@@ -76,7 +70,7 @@ const useUserProfileData = () => {
     try {
       await patchUserField(key, value);
     } catch {
-      // silent offline fallback — still persist locally
+      // silent offline fallback
     } finally {
       setProfile((p) => ({ ...p, [key]: value }));
       syncLocalStorage(key, value);
