@@ -16,9 +16,13 @@ export const updateUserProfile = (data) =>
 export const patchUserField = (field, value) =>
   api.patch("/user/me", { [field]: value }).then((r) => r.data);
 
-// GET /user/bookings?status=
+// GET /bookings/user/me?status=
 export const fetchUserBookings = (params = {}) =>
-  api.get("/user/bookings", { params }).then((r) => r.data);
+  api.get("/bookings/user/me", { params }).then((r) => r.data);
+
+// GET /bookings/user/:userId  (explicit user ID)
+export const fetchUserBookingsById = (userId) =>
+  api.get(`/bookings/user/${userId}`).then((r) => r.data);
 
 // GET /user/saved-providers
 export const fetchSavedProviders = () =>

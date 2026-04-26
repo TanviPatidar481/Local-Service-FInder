@@ -203,7 +203,88 @@ const ServiceCard = ({ service, isOwner, onDelete, onEdit }) => {
   );
 };
 
-// ── Create Post Modal ─────────────────────────────────────────────────────────
+// ── Book Now Modal ────────────────────────────────────────────────────────────
+const BookNowModal = ({ service, providerId, onClose }) => {
+  const [form, setForm]     = useState({ date:"", time:"", message:"" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError]   = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handle = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
+  const valid  = form.date && form.time;
+
+  const submit = async () => {
+    if (!valid) { setError("Date and time are required."); return; }
+    setSaving(true); setError("");
+    try {
+      await api.post("/bookings", {
+        providerId,
+        serviceId: service.id,
+        date:      form.date,
+        time:      form.time,
+        message:   form.message,
+      });
+      setSuccess(true);
+    } catch (err) {
+      setError(err.response?.data?.detail || "Failed to send booking request.");
+    } finally { setSaving(false); }
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:100, display:"flex", alignItems:"center", justifyContent:"center" }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={{ background:"#fff", borderRadius:16, width:440, maxWidth:"95vw", padding:"24px", boxShadow:"0 8px 32px rgba(0,0,0,0.18)" }}>
+        {success ? (
+          <div style={{ textAlign:"center", padding:"16px 0" }}>
+            <div style={{ width:56, height:56, borderRadius:"50%", background:"#f0fdf4", border:"2px solid #bbf7d0", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+            <h3 style={{ fontSize:16, fontWeight:700, color:"#111827", margin:"0 0 8px" }}>Booking Request Sent!</h3>
+            <p style={{ fontSize:13, color:"#6b7280", margin:"0 0 20px" }}>Your booking request has been sent to the provider.</p>
+            <button onClick={onClose} style={{ padding:"9px 24px", background:"#16a34a", color:"#fff", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer" }}>Done</button>
+          </div>
+        ) : (
+          <>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
+              <h2 style={{ fontSize:16, fontWeight:700, color:"#111827", margin:0 }}>Book Service</h2>
+              <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:"#6b7280" }}><X size={18} /></button>
+            </div>
+            <div style={{ background:"#f8fafc", borderRadius:10, padding:"10px 14px", marginBottom:16 }}>
+              <p style={{ fontSize:12, color:"#6b7280", margin:"0 0 3px" }}>Service</p>
+              <p style={{ fontSize:13, fontWeight:600, color:"#111827", margin:0 }}>{service.title}</p>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                <div>
+                  <label style={lbl}>Date <span style={{ color:"#ef4444" }}>*</span></label>
+                  <input name="date" type="date" value={form.date} onChange={handle} style={inp} />
+                </div>
+                <div>
+                  <label style={lbl}>Time <span style={{ color:"#ef4444" }}>*</span></label>
+                  <input name="time" type="time" value={form.time} onChange={handle} style={inp} />
+                </div>
+              </div>
+              <div>
+                <label style={lbl}>Message (optional)</label>
+                <textarea name="message" value={form.message} onChange={handle} rows={3}
+                  placeholder="Any specific instructions..."
+                  style={{ ...inp, resize:"vertical" }} />
+              </div>
+              {error && <p style={{ fontSize:12, color:"#ef4444", margin:0 }}>{error}</p>}
+            </div>
+            <div style={{ display:"flex", gap:10, justifyContent:"flex-end", marginTop:20 }}>
+              <button onClick={onClose} style={{ padding:"8px 18px", border:"1.5px solid #d1d5db", borderRadius:8, background:"#fff", fontSize:13, fontWeight:600, color:"#374151", cursor:"pointer" }}>Cancel</button>
+              <button onClick={submit} disabled={saving}
+                style={{ padding:"8px 22px", border:"none", borderRadius:8, background: saving ? "#86efac" : "#16a34a", fontSize:13, fontWeight:600, color:"#fff", cursor: saving ? "not-allowed" : "pointer" }}>
+                {saving ? "Sending..." : "Confirm Booking"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 const CreatePostModal = ({ onClose, onSave, initial }) => {
   const [content, setContent]   = useState(initial?.content || "");
   const [image, setImage]       = useState(initial?.image || null);
@@ -435,6 +516,9 @@ export default function ProfilePage() {
   const [editingPost, setEditingPost]   = useState(null);
   const [postSuccess, setPostSuccess]   = useState(false);
 
+  // Booking state
+  const [bookingService, setBookingService] = useState(null);
+
   // Load profile + services + posts on mount
   useEffect(() => {
     if (!profileUserId) { setLoading(false); return; }
@@ -444,7 +528,8 @@ export default function ProfilePage() {
         const { profile: d, services: svcs, posts: ps, isOwner: owner } = res.data;
 
         const built = {
-          id:           d.user_id || userId,
+          id:           d.id,          // business _id — used as providerId when booking
+          user_id:      d.user_id,     // auth user id — used for ownership checks
           name:         d.businessName || d.contactPerson || "",
           username:     `@${(d.businessName || "provider").toLowerCase().replace(/\s+/g, "")}`,
           avatar:       (d.businessName || d.contactPerson || "P").charAt(0).toUpperCase(),
@@ -680,7 +765,8 @@ export default function ProfilePage() {
                         <button style={{ display:"flex", alignItems:"center", gap:6, padding:"9px 18px", border:"1.5px solid #d1d5db", borderRadius:8, background:"#fff", fontSize:13, fontWeight:600, color:"#374151", cursor:"pointer", whiteSpace:"nowrap" }}>
                           <MessageSquare size={14} strokeWidth={2} /> Message
                         </button>
-                        <button style={{ display:"flex", alignItems:"center", gap:6, padding:"9px 18px", border:"none", borderRadius:8, background:"#16a34a", fontSize:13, fontWeight:600, color:"#fff", cursor:"pointer", whiteSpace:"nowrap" }}>
+                        <button style={{ display:"flex", alignItems:"center", gap:6, padding:"9px 18px", border:"none", borderRadius:8, background:"#16a34a", fontSize:13, fontWeight:600, color:"#fff", cursor:"pointer", whiteSpace:"nowrap" }}
+                          onClick={() => setBookingService(services[0] || { id:"general", title:"General Booking" })}>
                           <CalendarDays size={14} strokeWidth={2} /> Book Now
                         </button>
                       </>
@@ -723,9 +809,17 @@ export default function ProfilePage() {
             ) : (
               <div>
                 {services.map(s => (
-                  <ServiceCard key={s.id} service={s} isOwner={isOwner}
-                    onDelete={(id) => setServices(prev => prev.filter(x => x.id !== id))}
-                    onEdit={(svc) => setEditingService(svc)} />
+                  <div key={s.id}>
+                    <ServiceCard service={s} isOwner={isOwner}
+                      onDelete={(id) => setServices(prev => prev.filter(x => x.id !== id))}
+                      onEdit={(svc) => setEditingService(svc)} />
+                    {!isOwner && (
+                      <button onClick={() => setBookingService(s)}
+                        style={{ marginTop:6, marginBottom:4, padding:"6px 14px", background:"#16a34a", color:"#fff", border:"none", borderRadius:7, fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                        Book Now
+                      </button>
+                    )}
+                  </div>
                 ))}
                 <p style={{ fontSize:12, fontWeight:600, color:"#16a34a", textAlign:"center", marginTop:12, cursor:"pointer" }}>View all services</p>
               </div>
@@ -777,6 +871,15 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
+
+          {/* Booking modal */}
+          {bookingService && (
+            <BookNowModal
+              service={bookingService}
+              providerId={profileData.id}
+              onClose={() => setBookingService(null)}
+            />
+          )}
 
           {/* Post modals */}
           {showCreatePost && (
