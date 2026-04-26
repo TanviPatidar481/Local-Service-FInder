@@ -48,6 +48,37 @@ def update_profile(data: ProfileUpdate, current_user=Depends(get_current_user)):
     return {"message": "Profile updated"}
 
 
+@router.put("/profile/{user_id}")
+def update_profile_by_id(user_id: str, data: ProfileUpdate, current_user=Depends(get_current_user)):
+    # Ownership check
+    if str(current_user["user_id"]) != str(user_id):
+        raise HTTPException(status_code=403, detail="Forbidden: you can only edit your own profile")
+
+    allowed = ["businessName", "category", "serviceMode", "city", "locality", "description"]
+    updates = {k: v for k, v in data.dict().items() if k in allowed and v is not None}
+
+    if not updates:
+        raise HTTPException(status_code=400, detail="No valid fields to update")
+
+    # Validate required fields not empty
+    for field in ["businessName", "category", "serviceMode", "city"]:
+        if field in updates and not str(updates[field]).strip():
+            raise HTTPException(status_code=400, detail=f"{field} cannot be empty")
+
+    try:
+        result = businesses.update_one(
+            {"user_id": user_id},
+            {"$set": updates}
+        )
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Business profile not found")
+
+        updated = businesses.find_one({"user_id": user_id})
+        return _id(updated)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ── Stats ─────────────────────────────────────────────────────────────────────
 
 @router.get("/stats")
@@ -81,8 +112,10 @@ def get_services(current_user=Depends(get_current_user)):
 
 @router.post("/services")
 def add_service(data: ServiceCreate, current_user=Depends(get_current_user)):
+    print(f"[Services] POST from user: {current_user['user_id']}, data: {data.dict()}")
     doc = {**data.dict(), "provider_user_id": current_user["user_id"], "created_at": datetime.utcnow()}
     result = services_col.insert_one(doc)
+    print(f"[Services] Inserted with id: {result.inserted_id}")
     return {"message": "Service added", "service_id": str(result.inserted_id)}
 
 
@@ -96,6 +129,22 @@ def delete_service(service_id: str, current_user=Depends(get_current_user)):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Service not found")
     return {"message": "Service deleted"}
+
+
+@router.put("/services/{service_id}")
+def update_service(service_id: str, data: ServiceCreate, current_user=Depends(get_current_user)):
+    try:
+        obj_id = ObjectId(service_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Invalid service ID")
+    updates = {k: v for k, v in data.dict().items() if v is not None}
+    result = services_col.update_one(
+        {"_id": obj_id, "provider_user_id": current_user["user_id"]},
+        {"$set": updates}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return {"message": "Service updated"}
 
 
 # ── Bookings ──────────────────────────────────────────────────────────────────

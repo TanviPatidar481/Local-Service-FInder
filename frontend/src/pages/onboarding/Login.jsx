@@ -28,6 +28,9 @@ const Login = () => {
       localStorage.setItem("token", access_token);
       localStorage.setItem("userId", user_id);
       localStorage.setItem("role", role);
+      if (role === "provider") {
+        localStorage.setItem("providerId", user_id);
+      }
 
       if (role === "provider") {
         navigate("/provider/overview", { replace: true });

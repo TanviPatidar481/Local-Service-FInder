@@ -18,7 +18,7 @@ const ProviderCard = ({ provider }) => {
 
   return (
     <div
-      onClick={() => navigate(`/providers/${provider.id}`)}
+      onClick={() => navigate(`/provider/${provider.user_id || provider.id}`)}
       className="bg-white rounded-xl p-4 border border-slate-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
     >
       <div className="flex items-start gap-3 mb-3">

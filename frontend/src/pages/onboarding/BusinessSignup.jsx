@@ -39,6 +39,7 @@ const BusinessSignup = () => {
       });
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("userId", res.data.user_id);
+      localStorage.setItem("providerId", res.data.user_id);
       localStorage.setItem("role", "provider");
       localStorage.setItem("businessSignup", JSON.stringify(formData));
       navigate("/onboarding/business-category");

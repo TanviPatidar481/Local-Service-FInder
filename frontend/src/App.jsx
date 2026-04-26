@@ -32,6 +32,7 @@ import UserProfile    from "./pages/dashboard/UserProfile";
 // Public provider marketplace pages
 import ProvidersList          from "./pages/providers/ProvidersList";
 import ProviderPublicProfile  from "./pages/providers/ProviderPublicProfile";
+import ProfilePage            from "./pages/ProfilePage";
 
 const App = () => {
   return (
@@ -67,9 +68,9 @@ const App = () => {
         <Route path="/providers"     element={<ProvidersList />} />
         <Route path="/providers/:id" element={<ProviderPublicProfile />} />
 
-        {/* Legacy provider profile routes */}
-        <Route path="/provider/:id/view" element={<ProviderPublicProfile />} />
-        <Route path="/provider/:id"      element={<ProviderPublicProfile />} />
+        {/* Legacy provider profile routes — full design */}
+        <Route path="/provider/:id/view" element={<ProfilePage />} />
+        <Route path="/provider/:id"      element={<ProfilePage />} />
 
         {/* Provider Dashboard — operations only, profile/services on public profile */}
         <Route path="/provider" element={<DashboardShell />}>
