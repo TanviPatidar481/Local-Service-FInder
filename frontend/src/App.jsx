@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import socketService from "./services/socketService";
 
 import OnboardingChoice from "./pages/onboarding/OnboardingChoice";
 import UserSignup from "./pages/onboarding/UserSignup";
@@ -35,6 +36,18 @@ import ProviderPublicProfile  from "./pages/providers/ProviderPublicProfile";
 import ProfilePage            from "./pages/ProfilePage";
 
 const App = () => {
+  // Auto-connect socket if user is already logged in (e.g. after page refresh)
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        socketService.connect(token);
+      }
+    } catch (e) {
+      console.error("[App] Socket connect error:", e);
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

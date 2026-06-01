@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/axiosInstance";
+import socketService from "../../services/socketService";
 
 const BusinessSignup = () => {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ const BusinessSignup = () => {
       localStorage.setItem("providerId", res.data.user_id);
       localStorage.setItem("role", "provider");
       localStorage.setItem("businessSignup", JSON.stringify(formData));
+      socketService.connect(res.data.access_token);
       navigate("/onboarding/business-category");
     } catch (err) {
       setError(err.response?.data?.detail || "Signup failed. Try again.");

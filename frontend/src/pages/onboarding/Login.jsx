@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/axiosInstance";
+import socketService from "../../services/socketService";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,6 +32,9 @@ const Login = () => {
       if (role === "provider") {
         localStorage.setItem("providerId", user_id);
       }
+
+      // Connect socket immediately after login
+      socketService.connect(access_token);
 
       if (role === "provider") {
         navigate("/provider/overview", { replace: true });

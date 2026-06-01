@@ -815,6 +815,7 @@ user_id: d.user_id,
 ) : (
   <>
     <button
+      onClick={() => navigate("/user/messages", { state: { startChatWith: profileData.user_id, name: profileData.name } })}
       style={{
         display:"flex", alignItems:"center", gap:6,
         padding:"9px 18px",

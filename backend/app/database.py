@@ -10,3 +10,4 @@ client = MongoClient(MONGO_URL)
 db = client["lrf_db"]
 users_collection = db["users"]
 businesses_collection = db["businesses"]
+messages_collection = db["messages"]
