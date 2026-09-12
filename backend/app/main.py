@@ -1,25 +1,47 @@
+import os
 import socketio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app import database
 from app.routes import (
-    auth_routes, business_routes, user_routes,
-    provider_routes, providers_routes, posts_routes,
-    bookings_routes, messages_routes,
+    auth_routes,
+    business_routes,
+    user_routes,
+    provider_routes,
+    providers_routes,
+    posts_routes,
+    bookings_routes,
+    messages_routes,
 )
 from app.socket_manager import sio
 
-# ── FastAPI app ───────────────────────────────────────────────────────────────
+
 app = FastAPI()
 
+
+# -----------------------------
+# CORS Configuration
+# -----------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173"
+        ).split(",")
+        if origin.strip()
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
+# -----------------------------
+# API Routes
+# -----------------------------
 app.include_router(auth_routes.router)
 app.include_router(business_routes.router)
 app.include_router(user_routes.router)
@@ -30,12 +52,18 @@ app.include_router(bookings_routes.router)
 app.include_router(messages_routes.router)
 
 
+# -----------------------------
+# Health / Root Endpoint
+# -----------------------------
 @app.get("/")
 def home():
     return {"message": "Backend is running 🚀"}
 
 
-# ── Mount Socket.IO — MUST be last ────────────────────────────────────────────
-# ⚠️  START WITH: uvicorn app.main:socket_app --reload
-# NOT: uvicorn app.main:app --reload
-socket_app = socketio.ASGIApp(sio, other_asgi_app=app)
+# -----------------------------
+# Socket.IO + FastAPI
+# -----------------------------
+socket_app = socketio.ASGIApp(
+    sio,
+    other_asgi_app=app
+)
